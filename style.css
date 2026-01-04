@@ -1,0 +1,220 @@
+/* 1. Глобальні налаштування та Скидання */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #0f0f0f;
+    color: #ffffff;
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* 2. Головний контейнер (Flexbox) */
+.app-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* 3. Ліва панель (40% ширини) */
+.sidebar {
+    flex: 0 0 40%; /* Фіксовано 40% */
+    background-color: #161616;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    z-index: 10;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Заголовок та Перемикач режимів */
+header {
+    margin-bottom: 40px;
+}
+
+h1 {
+    font-size: 22px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+h1 span {
+    color: #00d4ff;
+    font-weight: 300;
+}
+
+.mode-switcher {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px;
+    border-radius: 12px;
+    gap: 5px;
+}
+
+.mode-switcher button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.mode-switcher button.active {
+    background: #00d4ff;
+    color: #000;
+}
+
+.mode-switcher button:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* Контентна частина */
+.info-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Картки інформації */
+.bone-card, .exam-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 25px;
+}
+
+#bone-name {
+    font-size: 28px;
+    color: #00d4ff;
+    margin-bottom: 5px;
+    line-height: 1.2;
+}
+
+#bone-latin {
+    font-style: italic;
+    color: #888;
+    font-size: 16px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 20px;
+}
+
+.description-scroll {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #ccc;
+}
+
+/* Кнопки в режимі іспиту */
+#start-exam {
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    background: transparent;
+    border: 1px solid #00d4ff;
+    color: #00d4ff;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+#start-exam:hover {
+    background: #00d4ff;
+    color: #000;
+}
+
+/* 4. Права панель (60% ширини) */
+#canvas-container {
+    flex: 0 0 60%;
+    background-color: #0f0f0f;
+    position: relative;
+    cursor: grab;
+}
+
+#canvas-container:active {
+    cursor: grabbing;
+}
+
+/* 5. Футер з інструкціями */
+footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.instruction {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+}
+
+/* 6. Екран завантаження */
+#loader {
+    position: fixed;
+    inset: 0;
+    background: #0f0f0f;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(0, 212, 255, 0.1);
+    border-top: 3px solid #00d4ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Адаптивність для планшетів/телефонів */
+@media (max-width: 1024px) {
+    .app-container {
+        flex-direction: column-reverse; /* Модель зверху, текст знизу */
+    }
+    .sidebar {
+        flex: 0 0 50%;
+        width: 100%;
+    }
+    #canvas-container {
+        flex: 0 0 50%;
+    }
+}
+
+/* Прогрес-бар */
+#progress-container {
+    width: 100%; height: 10px; background: #333; border-radius: 5px; margin-top: 10px; overflow: hidden;
+}
+#progress-bar {
+    width: 0%; height: 100%; background: #00d4ff; transition: width 0.3s ease;
+}
+/* Екран результату */
+#result-screen {
+    display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.9); padding: 30px; border-radius: 15px; text-align: center; color: white;
+    border: 2px solid #00d4ff; z-index: 100;
+}

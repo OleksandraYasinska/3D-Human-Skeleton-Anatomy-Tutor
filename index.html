@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skeleton Anatomy | Pro Learning</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>Завантаження 3D-середовища...</p>
+    </div>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <header>
+                <h1>Anatomy<span>Explorer</span></h1>
+                <div class="mode-switcher">
+                    <button id="btn-learn" class="active">Навчання</button>
+                    <button id="btn-exam">Іспит</button>
+                </div>
+            </header>
+
+            <main class="info-content">
+                <div id="panel-learn" class="mode-panel">
+                    <div class="bone-card">
+                        <h2 id="bone-name">Оберіть кістку</h2>
+                        <p id="bone-latin">Select a bone on the model</p>
+                        <hr>
+                        <div class="description-scroll">
+                            <p id="bone-description">
+                                Натисніть на будь-яку частину скелета, щоб отримати детальну довідку про її будову та функції.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="panel-exam" class="mode-panel" style="display: none;">
+                    <div class="exam-card">
+                        <h3>Режим тестування</h3>
+                        
+                        <div id="progress-container" style="width: 100%; height: 8px; background: #333; border-radius: 4px; margin: 10px 0; overflow: hidden;">
+                            <div id="progress-bar" style="width: 0%; height: 100%; background: #00d4ff; transition: width 0.3s ease;"></div>
+                        </div>
+                
+                        <p id="exam-question">Натисніть "Почати", щоб почати іспит (12 кісток, до 3 помилок).</p>
+                        
+                        <div id="exam-stats" style="margin-bottom: 15px;">
+                            <div>Правильно: <strong id="score">0</strong> / 12</div>
+                            <div id="mistakes-container">Помилки: <strong id="mistakes">0</strong> / 4</div>
+                        </div>
+                        
+                        <button id="start-exam">Почати іспит</button>
+                    </div>
+                </div>
+                
+                <div id="result-screen" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(20,20,20,0.95); padding: 40px; border-radius: 20px; text-align: center; color: white; border: 2px solid #00d4ff; z-index: 1000; min-width: 300px; box-shadow: 0 0 30px rgba(0,212,255,0.3);">
+                    <h2 id="result-title" style="margin-top: 0; font-size: 24px;"></h2>
+                    <p id="result-score" style="font-size: 18px; line-height: 1.6;"></p>
+                    <button id="close-result" style="margin-top: 20px; padding: 10px 25px; background: #00d4ff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Зрозуміло</button>
+                </div>
+            </main>
+
+            <footer>
+                <p class="instruction">Мишка: обертання та зум • Клік: вибір</p>
+                <p class="instruction">SanSanivna</p>
+            </footer>
+        </aside>
+
+        <main id="canvas-container">
+            </main>
+    </div>
+
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="main.js"></script>
+
+</body>
+</html>
