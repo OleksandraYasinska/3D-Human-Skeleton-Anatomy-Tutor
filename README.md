@@ -47,3 +47,9 @@
 │── main.js               # Основна логіка (Three.js + режим іспиту)
 │── style.css             # Стилізація інтерфейсу
 └── index.html            # Вхідна точка додатку
+```
+
+---
+
+## Live версія
+**Перейдіть за адресою для ознайомлення: ** https://oleksandrayasinska.github.io/3D-Human-Skeleton-Anatomy-Tutor/ 
