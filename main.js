@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // Елементи інтерфейсу
@@ -89,7 +90,8 @@ function setupScene() {
     controls.update();
 }
 
-function loadModel() {
+//версія без декодера
+/*function loadModel() {
     const loader = new GLTFLoader();
     loader.load('models/Skeleton.glb', (gltf) => {
         skeletonModel = gltf.scene;
@@ -106,6 +108,48 @@ function loadModel() {
         skeletonModel.position.y = -3.8;
         scene.add(skeletonModel);
         document.getElementById('loader').style.display = 'none';
+    });
+}*/
+function loadModel() {
+    const loader = new GLTFLoader();
+
+    // --- Налаштування Draco декодера ---
+    // дозволяє розпаковувати стиснутий файл .glb
+    const dracoLoader = new DRACOLoader();
+    
+    // Вказуємо шлях до бібліотек декодування (використовуємо Google CDN)
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    
+    // Передаємо налаштований Draco завантажувач у GLTFLoader
+    loader.setDRACOLoader(dracoLoader);
+
+    // Завантажуємо модель
+    loader.load('models/Skeleton.glb', (gltf) => {
+        skeletonModel = gltf.scene;
+        
+        skeletonModel.traverse((child) => {
+            if (child.isMesh) {
+                // Встановлюємо матеріал для кісток
+                child.material = new THREE.MeshStandardMaterial({
+                    color: 0xffffff,
+                    roughness: 0.6,
+                    metalness: 0.1
+                });
+                // Зберігаємо оригінальний колір для логіки підсвічування
+                child.userData.originalColor = child.material.color.clone();
+            }
+        });
+
+        skeletonModel.position.y = -3.8;
+        scene.add(skeletonModel);
+
+        // Приховуємо екран завантаження
+        const loaderUI = document.getElementById('loader');
+        if (loaderUI) loaderUI.style.display = 'none';
+
+    }, undefined, (error) => {
+        // Допоможе зрозуміти причину, якщо файл не знайдено або він пошкоджений
+        console.error('Сталася помилка при завантаженні моделі:', error);
     });
 }
 
