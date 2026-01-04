@@ -52,4 +52,4 @@
 ---
 
 ## Live версія
-**Перейдіть за адресою для ознайомлення: ** https://oleksandrayasinska.github.io/3D-Human-Skeleton-Anatomy-Tutor/ 
+**Перейдіть за адресою для ознайомлення:**  https://oleksandrayasinska.github.io/3D-Human-Skeleton-Anatomy-Tutor/ 
