@@ -63,8 +63,13 @@ function setupScene() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0f0f0f);
 
-    camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
-    camera.position.set(0, 0, 14);
+    const isMobile = window.innerWidth <= 1024;
+    
+    // Збільшуємо FOV для мобільних (50 замість 40), щоб бачити більше по вертикалі
+    camera = new THREE.PerspectiveCamera(isMobile ? 50 : 40, container.clientWidth / container.clientHeight, 0.1, 1000);
+    
+    // Відсуваємо камеру далі на мобільних, щоб скелет вліз повністю
+    camera.position.set(0, 0, isMobile ? 20 : 14);
 
     renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(container.clientWidth, container.clientHeight);
@@ -76,87 +81,71 @@ function setupScene() {
     light.position.set(5, 10, 7);
     scene.add(light);
 
-    //  НАЛАШТУВАННЯ КАМЕРИ
+    // НАЛАШТУВАННЯ КАМЕРИ ТА КЕРУВАННЯ
     controls = new OrbitControls(camera, renderer.domElement);
-    controls.zoomToCursor = true;
+    
+    // На мобільних зум до курсора може працювати некоректно, вимикаємо для тач-інтерфейсів
+    controls.zoomToCursor = !isMobile; 
+    
     controls.enableDamping = true;
-    controls.dampingFactor = 0.05;
-    controls.enablePan = false;
+    controls.dampingFactor = 0.07;
+    
+    // Увімкнено панорамування (двома пальцями), щоб можна було підняти/опустити скелет
+    controls.enablePan = true; 
+    controls.panSpeed = 0.8;
+    
     controls.enableZoom = true;
     controls.zoomSpeed = 1.0;
     controls.minDistance = 2;
-    controls.maxDistance = 25;
+    controls.maxDistance = 35; // Збільшено ліміт для мобільних
+    
     controls.target.copy(desiredTarget);
     controls.update();
 }
 
-//версія без декодера
-/*function loadModel() {
-    const loader = new GLTFLoader();
-    loader.load('models/Skeleton.glb', (gltf) => {
-        skeletonModel = gltf.scene;
-        skeletonModel.traverse((child) => {
-            if (child.isMesh) {
-                child.material = new THREE.MeshStandardMaterial({
-                    color: 0xffffff,
-                    roughness: 0.6,
-                    metalness: 0.1
-                });
-                child.userData.originalColor = child.material.color.clone();
-            }
-        });
-        skeletonModel.position.y = -3.8;
-        scene.add(skeletonModel);
-        document.getElementById('loader').style.display = 'none';
-    });
-}*/
 function loadModel() {
     const loader = new GLTFLoader();
-
-    // --- Налаштування Draco декодера ---
-    // дозволяє розпаковувати стиснутий файл .glb
     const dracoLoader = new DRACOLoader();
-    
-    // Вказуємо шлях до бібліотек декодування (використовуємо Google CDN)
     dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
-    
-    // Передаємо налаштований Draco завантажувач у GLTFLoader
     loader.setDRACOLoader(dracoLoader);
 
-    // Завантажуємо модель
     loader.load('models/Skeleton.glb', (gltf) => {
         skeletonModel = gltf.scene;
         
         skeletonModel.traverse((child) => {
             if (child.isMesh) {
-                // Встановлюємо матеріал для кісток
                 child.material = new THREE.MeshStandardMaterial({
                     color: 0xffffff,
                     roughness: 0.6,
                     metalness: 0.1
                 });
-                // Зберігаємо оригінальний колір для логіки підсвічування
                 child.userData.originalColor = child.material.color.clone();
             }
         });
 
-        skeletonModel.position.y = -3.8;
+        // АДАПТИВНА ВИСОТА: На мобільних опускаємо модель нижче, 
+        // щоб центр мас був ближче до центру канвасу
+        const isMobile = window.innerWidth <= 1024;
+        skeletonModel.position.y = isMobile ? -6 : -3.8;
+
         scene.add(skeletonModel);
 
-        // Приховуємо екран завантаження
         const loaderUI = document.getElementById('loader');
         if (loaderUI) loaderUI.style.display = 'none';
 
     }, undefined, (error) => {
-        // Допоможе зрозуміти причину, якщо файл не знайдено або він пошкоджений
         console.error('Сталася помилка при завантаженні моделі:', error);
     });
 }
 
 function updateMouse(event) {
     const rect = container.getBoundingClientRect();
-    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    // Використовуємо touches для мобільних або clientX для ПК
+    const clientX = event.clientX || (event.touches && event.touches[0].clientX);
+    const clientY = event.clientY || (event.touches && event.touches[0].clientY);
+    
+    mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
 }
 
 function onPointerDown(event) {
@@ -190,7 +179,6 @@ function selectBone(obj) {
 
 // Іспит
 function startExam() {
-    // Створюємо пул унікальних назв, щоб коректно працювали фаланги та зуби
     const allUniqueNames = [...new Set(Object.values(boneData).map(b => b.ua))];
     
     examState = {
@@ -282,6 +270,7 @@ function finishExam(success) {
 // Події
 function setupEvents() {
     window.addEventListener('resize', onResize);
+    // Використовуємо pointerdown для універсальної підтримки миші та тачу
     container.addEventListener('pointerdown', onPointerDown);
 
     btnLearn.onclick = () => switchMode('learn');
@@ -295,7 +284,6 @@ function setupEvents() {
 function switchMode(mode) {
     currentMode = mode;
     
-    // Візуальне виділення активної кнопки
     btnLearn.classList.toggle('active', mode === 'learn');
     btnExam.classList.toggle('active', mode === 'exam');
 
@@ -309,15 +297,29 @@ function switchMode(mode) {
 }
 
 function onResize() {
-    camera.aspect = container.clientWidth / container.clientHeight;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+
+    camera.aspect = w / h;
+
+    // Динамічне коригування FOV: чим вужчий екран, тим більший кут огляду
+    if (w < 600) {
+        camera.fov = 55;
+    } else if (w < 1024) {
+        camera.fov = 50;
+    } else {
+        camera.fov = 40;
+    }
+
     camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setSize(w, h);
 }
 
 // Анімація
 function animate() {
     requestAnimationFrame(animate);
     
+    // Плавне слідування за таргетом
     if (controls.state === -1) {
         controls.target.lerp(desiredTarget, 0.1);
     } else {
