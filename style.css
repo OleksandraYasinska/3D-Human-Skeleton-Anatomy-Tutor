@@ -9,7 +9,7 @@ body {
     font-family: 'Inter', sans-serif;
     background-color: #0f0f0f;
     color: #ffffff;
-    overflow: hidden;
+    overflow: hidden; /* Забороняємо загальний скрол сторінки, щоб працював зум у 3D */
     height: 100vh;
 }
 
@@ -20,9 +20,9 @@ body {
     height: 100vh;
 }
 
-/* 3. Ліва панель (40% ширини) */
+/* 3. Ліва панель (Sidebar) - Десктоп версія */
 .sidebar {
-    flex: 0 0 40%; /* Фіксовано 40% */
+    flex: 0 0 40%; /* 40% ширини на великих екранах */
     background-color: #161616;
     border-right: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
@@ -32,16 +32,16 @@ body {
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
 }
 
-/* Заголовок та Перемикач режимів */
+/* Заголовок */
 header {
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
 h1 {
     font-size: 22px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 h1 span {
@@ -49,12 +49,14 @@ h1 span {
     font-weight: 300;
 }
 
+/* Перемикач режимів */
 .mode-switcher {
     display: flex;
     background: rgba(255, 255, 255, 0.05);
     padding: 5px;
     border-radius: 12px;
     gap: 5px;
+    margin-bottom: 20px;
 }
 
 .mode-switcher button {
@@ -67,6 +69,7 @@ h1 span {
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
+    font-size: 14px;
 }
 
 .mode-switcher button.active {
@@ -74,16 +77,20 @@ h1 span {
     color: #000;
 }
 
-.mode-switcher button:hover:not(.active) {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-}
-
-/* Контентна частина */
+/* Контентна частина зі скролом */
 .info-content {
     flex: 1;
     overflow-y: auto;
     padding-right: 10px;
+    /* Стилізація скроллбару для Webkit */
+}
+
+.info-content::-webkit-scrollbar {
+    width: 4px;
+}
+.info-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 212, 255, 0.3);
+    border-radius: 10px;
 }
 
 /* Картки інформації */
@@ -92,6 +99,7 @@ h1 span {
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 20px;
     padding: 25px;
+    margin-bottom: 20px;
 }
 
 #bone-name {
@@ -105,14 +113,14 @@ h1 span {
     font-style: italic;
     color: #888;
     font-size: 16px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     display: block;
 }
 
 hr {
     border: none;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .description-scroll {
@@ -121,11 +129,10 @@ hr {
     color: #ccc;
 }
 
-/* Кнопки в режимі іспиту */
+/* Кнопка іспиту */
 #start-exam {
     width: 100%;
     padding: 15px;
-    margin-top: 20px;
     background: transparent;
     border: 1px solid #00d4ff;
     color: #00d4ff;
@@ -133,6 +140,7 @@ hr {
     cursor: pointer;
     font-weight: 700;
     transition: all 0.3s;
+    margin-top: 10px;
 }
 
 #start-exam:hover {
@@ -140,81 +148,154 @@ hr {
     color: #000;
 }
 
-/* 4. Права панель (60% ширини) */
+/* 4. Права панель (Canvas) */
 #canvas-container {
     flex: 0 0 60%;
     background-color: #0f0f0f;
     position: relative;
     cursor: grab;
+    touch-action: none; /* Важливо для коректної роботи тач-подій в Three.js */
 }
 
 #canvas-container:active {
     cursor: grabbing;
 }
 
-/* 5. Футер з інструкціями */
+/* 5. Футер */
 footer {
     margin-top: auto;
-    padding-top: 20px;
+    padding-top: 15px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .instruction {
-    font-size: 12px;
+    font-size: 11px;
     color: #555;
     text-align: center;
 }
 
 /* 6. Екран завантаження */
 #loader {
-    position: fixed;
-    inset: 0;
-    background: #0f0f0f;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    position: fixed; inset: 0; background: #0f0f0f;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000;
 }
 
 .spinner {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(0, 212, 255, 0.1);
-    border-top: 3px solid #00d4ff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 15px;
+    width: 40px; height: 40px; border: 3px solid rgba(0, 212, 255, 0.1);
+    border-top: 3px solid #00d4ff; border-radius: 50%;
+    animation: spin 1s linear infinite; margin-bottom: 15px;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* Адаптивність для планшетів/телефонів */
+/* 7. ФІНАЛЬНА АДАПТИВНІСТЬ (Mobile & Tablets) */
 @media (max-width: 1024px) {
     .app-container {
-        flex-direction: column-reverse; /* Модель зверху, текст знизу */
+        flex-direction: column-reverse; /* Модель стає зверху, панель знизу */
     }
-    .sidebar {
-        flex: 0 0 50%;
-        width: 100%;
-    }
+
+    /* ФІКС: Віддаємо 60% ВИСОТИ екрана під канвас */
     #canvas-container {
-        flex: 0 0 50%;
+        flex: 0 0 60vh; 
+        width: 100%;
+        height: 60vh;
+    }
+
+    /* Панель з інформацією займає решту 40% */
+    .sidebar {
+        flex: 1; 
+        width: 100%;
+        padding: 15px 20px;
+        border-right: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+        border-radius: 20px 20px 0 0;
+    }
+
+    header {
+        margin-bottom: 10px;
+    }
+
+    /* Ховаємо великий заголовок на мобільних для економії місця */
+    h1 {
+        display: none;
+    }
+
+    /* Зменшуємо шрифти та відступи */
+    #bone-name {
+        font-size: 22px;
+    }
+
+    #bone-latin {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .bone-card, .exam-card {
+        padding: 15px;
+        border-radius: 15px;
+    }
+
+    .description-scroll {
+        font-size: 14px;
+    }
+
+    .mode-switcher button {
+        padding: 8px;
+        font-size: 13px;
+    }
+
+    .instruction {
+        display: none; /* Ховаємо підказки для ПК на мобільних */
     }
 }
 
-/* Прогрес-бар */
+/* Для зовсім маленьких або низьких екранів */
+@media (max-height: 700px) and (max-width: 600px) {
+    #canvas-container {
+        flex: 0 0 55vh;
+    }
+}
+
+/* Прогрес-бар та результати */
 #progress-container {
-    width: 100%; height: 10px; background: #333; border-radius: 5px; margin-top: 10px; overflow: hidden;
+    width: 100%; height: 8px; background: #333; border-radius: 4px; margin-top: 10px; overflow: hidden;
 }
 #progress-bar {
     width: 0%; height: 100%; background: #00d4ff; transition: width 0.3s ease;
 }
-/* Екран результату */
+
 #result-screen {
-    display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.9); padding: 30px; border-radius: 15px; text-align: center; color: white;
-    border: 2px solid #00d4ff; z-index: 100;
+    display: none; 
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    background: rgba(15, 15, 15, 0.98); 
+    padding: 30px; 
+    border-radius: 20px; 
+    text-align: center; 
+    color: white; 
+    border: 1px solid #00d4ff; 
+    z-index: 100; 
+    width: 85%; 
+    max-width: 400px;
+    box-shadow: 0 0 50px rgba(0, 212, 255, 0.2);
+}
+
+#result-screen h2 { 
+    margin-bottom: 15px; 
+    font-size: 24px;
+}
+
+#close-result {
+    margin-top: 25px; 
+    padding: 12px 25px; 
+    background: #00d4ff; 
+    border: none; 
+    border-radius: 10px; 
+    cursor: pointer; 
+    font-weight: bold;
+    color: #000;
+    width: 100%;
 }
